@@ -1,0 +1,76 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        
+        stage('Setup') {
+            steps {
+                script {
+                    if (isUnix()) {
+                        sh 'node --version'
+                        sh 'npm --version'
+                    } else {
+                        bat 'node --version'
+                        bat 'npm --version'
+                    }
+                }
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                script {
+                    if (isUnix()) {
+                        sh 'npm install'
+                        sh 'npm run build'
+                    } else {
+                        bat 'npm install'
+                        bat 'npm run build'
+                    }
+                }
+            }
+        }
+        
+        stage('Run Docker') {
+            steps {
+                script {
+                    sh 'docker build -t petpal:${BUILD_NUMBER} .'
+                    sh 'docker run -d -p 3000:80 --name petpal-${BUILD_NUMBER} petpal:${BUILD_NUMBER}'
+                    sleep 30
+                }
+            }
+        }
+        
+        stage('Smoke Test') {
+            steps {
+                script {
+                    if (isUnix()) {
+                        sh './smoke-test.sh'
+                    } else {
+                        bat 'bash smoke-test.sh'
+                    }
+                }
+            }
+        }
+        
+        stage('Archive Artifacts') {
+            steps {
+                archiveArtifacts artifacts: 'build/**/*'
+            }
+        }
+    }
+    
+    post {
+        always {
+            script {
+                sh 'docker stop petpal-${BUILD_NUMBER} || true'
+                sh 'docker rm petpal-${BUILD_NUMBER} || true'
+            }
+        }
+    }
+}
