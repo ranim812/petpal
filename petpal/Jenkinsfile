@@ -2,51 +2,86 @@ pipeline {
     agent any
     
     stages {
+        // STAGE 1: Get the code
         stage('Checkout') {
             steps {
+                echo "📥 Checking out code..."
                 checkout scm
             }
         }
         
+        // STAGE 2: Setup environment
         stage('Setup') {
             steps {
-                bat 'node --version'
-                bat 'npm --version'
+                dir('petpal') {
+                    echo "⚙️ Setting up environment..."
+                    bat 'node --version'
+                    bat 'npm --version'
+                }
             }
         }
         
+        // STAGE 3: Build the React app
         stage('Build') {
             steps {
-                bat 'npm install'
-                bat 'npm run build'
+                dir('petpal') {
+                    echo "🏗️ Building application..."
+                    bat 'npm install'
+                    bat 'npm run build'
+                }
             }
         }
         
+        // STAGE 4: Run in Docker container
         stage('Run Docker') {
             steps {
-                bat 'docker build -t petpal:%BUILD_NUMBER% .'
-                bat 'docker run -d -p 3000:80 --name petpal-%BUILD_NUMBER% petpal:%BUILD_NUMBER%'
-                sleep 30
+                dir('petpal') {
+                    echo "🐳 Building Docker image..."
+                    bat 'docker build -t petpal:${env.BUILD_NUMBER} .'
+                    echo "🐳 Starting Docker container..."
+                    bat 'docker run -d -p 3000:80 --name petpal-${env.BUILD_NUMBER} petpal:${env.BUILD_NUMBER}'
+                    sleep 30
+                }
             }
         }
         
+        // STAGE 5: Basic smoke tests
         stage('Smoke Test') {
             steps {
-                bat 'bash smoke-test.sh'
+                dir('petpal') {
+                    echo "🧪 Running smoke tests..."
+                    bat 'bash smoke-test.sh'
+                }
             }
         }
         
-        stage('Archive') {
+        // STAGE 6: Save build artifacts
+        stage('Archive Artifacts') {
             steps {
-                archiveArtifacts artifacts: 'build/**/*'
+                dir('petpal') {
+                    echo "📦 Archiving artifacts..."
+                    archiveArtifacts artifacts: 'build/**/*'
+                    archiveArtifacts artifacts: 'Dockerfile'
+                    archiveArtifacts artifacts: 'smoke-test.sh'
+                }
             }
         }
     }
     
+    // CLEANUP STAGE (recommended)
     post {
         always {
-            bat 'docker stop petpal-%BUILD_NUMBER% || true'
-            bat 'docker rm petpal-%BUILD_NUMBER% || true'
+            echo "🧹 Cleaning up..."
+            dir('petpal') {
+                bat 'docker stop petpal-${env.BUILD_NUMBER} || true'
+                bat 'docker rm petpal-${env.BUILD_NUMBER} || true'
+            }
+        }
+        success {
+            echo "✅ Pipeline completed successfully!"
+        }
+        failure {
+            echo "❌ Pipeline failed!"
         }
     }
 }
