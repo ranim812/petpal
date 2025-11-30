@@ -36,13 +36,26 @@ pipeline {
             }
         }
         
-        stage('Smoke Test') {
-            steps {
-                dir('petpal') {
-                    bat 'bash smoke-test.sh'
-                }
-            }
+stage('Smoke Test') {
+    steps {
+        dir('petpal') {
+            bat '''
+            echo "🧪 Running smoke tests..."
+            if exist dist (
+                echo "✅ dist directory exists"
+            ) else (
+                echo "❌ dist directory missing!" && exit 1
+            )
+            if exist dist\\index.html (
+                echo "✅ index.html exists"
+            ) else (
+                echo "❌ index.html missing!" && exit 1
+            )
+            echo "🎉 All smoke tests passed!"
+            '''
         }
+    }
+}
         
         stage('Archive Artifacts') {
             steps {
