@@ -60,12 +60,26 @@ pipeline {
         stage('Archive Artifacts') {
             steps {
                 dir('petpal') {
+                    // Built application
                     archiveArtifacts artifacts: 'dist/**/*'
+                    // React source code and components
+                    archiveArtifacts artifacts: 'src/**/*'
+                    archiveArtifacts artifacts: 'src/components/**/*'
+                    // Configuration files
+                    archiveArtifacts artifacts: 'package.json'
+                    archiveArtifacts artifacts: 'vite.config.js'
+                    archiveArtifacts artifacts: 'eslint.config.js'
+                    // Public assets
+                    archiveArtifacts artifacts: 'public/**/*'
+                    // DevOps files
                     archiveArtifacts artifacts: 'Dockerfile'
+                    archiveArtifacts artifacts: 'Jenkinsfile'
                     archiveArtifacts artifacts: 'smoke-test.sh'
-                    }
+                    // Documentation
+                    archiveArtifacts artifacts: 'README.md'
                 }
             }
+        }
     }
     
     post {
