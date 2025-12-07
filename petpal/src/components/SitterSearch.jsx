@@ -1,125 +1,132 @@
-import { useState, useEffect } from 'react';
+import { useState } from "react";
 
-export default function SitterSearch({ onNavigate, sitters, setSitters }) {
-  const [filteredSitters, setFilteredSitters] = useState([]);
+export default function SitterSearch({ onNavigate }) {
   const [filters, setFilters] = useState({
-    distance: 10,
-    maxPrice: 50,
-    availability: 'any',
-    petType: 'any'
+    location: "",
+    petType: "",
+    service: "",
+    availability: "",
+    priceRange: [0, 100]
   });
-  const [searchQuery, setSearchQuery] = useState('');
 
-  // Initialize sitters if empty
-  useEffect(() => {
-    if (sitters.length === 0) {
-      const mockSitters = [
-        {
-          id: 1,
-          name: "Marie Dubois",
-          avatar: "👩",
-          rating: 4.9,
-          reviews: 48,
-          distance: 1.2,
-          price: 25,
-          availability: ["Lun", "Mar", "Mer", "Jeu", "Ven"],
-          petTypes: ["Chiens", "Chats"],
-          services: ["Garde à domicile", "Promenades"],
-          description: "Passionnée par les animaux, j'ai 5 ans d'expérience en pet sitting...",
-          verified: true
-        },
-        {
-          id: 2,
-          name: "Lucas Martin",
-          avatar: "👨",
-          rating: 4.8,
-          reviews: 35,
-          distance: 2.5,
-          price: 30,
-          availability: ["Mar", "Mer", "Jeu", "Ven", "Sam"],
-          petTypes: ["Chiens", "Oiseaux"],
-          services: ["Garde chez le sitter", "Soins spéciaux"],
-          description: "Amoureux des chiens, je propose un environnement sécurisé...",
-          verified: true
-        },
-        {
-          id: 3,
-          name: "Sophie Laurent",
-          avatar: "👩‍🦰",
-          rating: 5.0,
-          reviews: 62,
-          distance: 0.8,
-          price: 35,
-          availability: ["Lun", "Mer", "Ven", "Sam", "Dim"],
-          petTypes: ["Chiens", "Chats", "Lapins"],
-          services: ["Garde à domicile", "Garderie de jour"],
-          description: "Vétérinaire de formation, j'offre des soins professionnels...",
-          verified: true
-        },
-        {
-          id: 4,
-          name: "Thomas Petit",
-          avatar: "👨‍💼",
-          rating: 4.7,
-          reviews: 29,
-          distance: 3.2,
-          price: 20,
-          availability: ["Jeu", "Ven", "Sam", "Dim"],
-          petTypes: ["Chats"],
-          services: ["Garde à domicile", "Promenades"],
-          description: "Spécialiste des chats, je comprends leurs besoins spécifiques...",
-          verified: false
-        }
-      ];
-      setSitters(mockSitters);
+  const [sitters] = useState([
+    {
+      id: "1", // Garder comme string
+      name: "Marie Dubois",
+      avatar: "👩",
+      rating: 4.9,
+      reviews: 48,
+      distance: 1.2,
+      price: 25,
+      availability: ["Lun", "Mar", "Mer", "Jeu", "Ven"],
+      petTypes: ["Chiens", "Chats"],
+      services: ["Garde à domicile", "Garde chez le sitter", "Promenades"],
+      verified: true,
+      responseTime: "1 heure"
+    },
+    {
+      id: "2", // Garder comme string
+      name: "Lucas Martin",
+      avatar: "👨",
+      rating: 4.8,
+      reviews: 35,
+      distance: 2.5,
+      price: 30,
+      availability: ["Lun", "Mer", "Ven", "Sam", "Dim"],
+      petTypes: ["Chiens", "Oiseaux"],
+      services: ["Garde à domicile", "Garde chez le sitter", "Promenades"],
+      verified: true,
+      responseTime: "2 heures"
+    },
+    {
+      id: "3", // Garder comme string
+      name: "Sophie Laurent",
+      avatar: "👩‍🦰",
+      rating: 5.0,
+      reviews: 62,
+      distance: 0.8,
+      price: 28,
+      availability: ["Mar", "Jeu", "Sam", "Dim"],
+      petTypes: ["Chiens", "Chats", "Lapins"],
+      services: ["Garde à domicile", "Garde chez le sitter", "Promenades"],
+      verified: true,
+      responseTime: "30 minutes"
+    },
+    {
+      id: "4", // Garder comme string
+      name: "Thomas Petit",
+      avatar: "👨‍💼",
+      rating: 4.7,
+      reviews: 29,
+      distance: 3.1,
+      price: 22,
+      availability: ["Lun", "Mar", "Jeu", "Ven"],
+      petTypes: ["Chiens"],
+      services: ["Garde à domicile", "Promenades"],
+      verified: false,
+      responseTime: "3 heures"
+    },
+    {
+      id: "5", // Garder comme string
+      name: "Emma Bernard",
+      avatar: "👩‍🦰",
+      rating: 4.9,
+      reviews: 41,
+      distance: 1.8,
+      price: 26,
+      availability: ["Mer", "Jeu", "Ven", "Sam", "Dim"],
+      petTypes: ["Chiens", "Chats", "Rongeurs"],
+      services: ["Garde à domicile", "Garde chez le sitter", "Promenades"],
+      verified: true,
+      responseTime: "1 heure"
+    },
+    {
+      id: "6", // Garder comme string
+      name: "Antoine Lefebvre",
+      avatar: "👨",
+      rating: 4.6,
+      reviews: 33,
+      distance: 4.2,
+      price: 20,
+      availability: ["Lun", "Mar", "Mer", "Jeu"],
+      petTypes: ["Chats", "Oiseaux"],
+      services: ["Garde à domicile", "Garde chez le sitter"],
+      verified: false,
+      responseTime: "4 heures"
     }
-  }, [sitters.length, setSitters]);
+  ]);
 
-  // Appliquer les filtres
-  useEffect(() => {
-    let result = sitters;
-    
-    // Filtre par recherche
-    if (searchQuery) {
-      result = result.filter(sitter => 
-        sitter.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        sitter.description.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-    
-    // Filtre par distance
-    result = result.filter(sitter => sitter.distance <= filters.distance);
-    
-    // Filtre par prix
-    result = result.filter(sitter => sitter.price <= filters.maxPrice);
-    
-    // Filtre par type d'animal
-    if (filters.petType !== 'any') {
-      result = result.filter(sitter => 
-        sitter.petTypes.includes(filters.petType)
-      );
-    }
-    
-    setFilteredSitters(result);
-  }, [filters, searchQuery, sitters]);
-
-  const handleFilterChange = (filterName, value) => {
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
     setFilters(prev => ({
       ...prev,
-      [filterName]: value
+      [name]: value
     }));
   };
 
   const viewSitterProfile = (sitterId) => {
+    console.log("Navigation vers le profil du sitter avec ID:", sitterId);
+    console.log("Type de l'ID:", typeof sitterId);
     onNavigate(`sitterprofile/${sitterId}`);
   };
+
+  const filteredSitters = sitters.filter(sitter => {
+    return (
+      (!filters.location || sitter.distance <= parseFloat(filters.location)) &&
+      (!filters.petType || sitter.petTypes.includes(filters.petType)) &&
+      (!filters.service || sitter.services.includes(filters.service)) &&
+      (!filters.availability || sitter.availability.includes(filters.availability)) &&
+      sitter.price >= filters.priceRange[0] &&
+      sitter.price <= filters.priceRange[1]
+    );
+  });
 
   return (
     <div className="sitter-search-container">
       {/* Header */}
       <div className="sitter-search-header">
         <div className="container sitter-search-header-inner">
-          <button className="back-button" onClick={() => onNavigate('home')}>
+          <button className="back-button" onClick={() => onNavigate("home")}>
             ← Retour
           </button>
           <h1 className="sitter-search-title">Trouver un Pet Sitter</h1>
@@ -127,89 +134,130 @@ export default function SitterSearch({ onNavigate, sitters, setSitters }) {
       </div>
 
       <div className="container">
-        {/* Search Bar */}
-        <div className="search-container">
-          <span className="search-icon">🔍</span>
-          <input
-            type="text"
-            placeholder="Rechercher un sitter..."
-            className="search-input"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-
-        {/* Filters */}
-        <div className="filters-container">
-          <div className="filter-group">
-            <label className="filter-label">Distance (km)</label>
-            <div className="range-filter">
+        {/* Search Filters */}
+        <div className="filters-card">
+          <div className="filters-grid">
+            <div className="filter-group">
+              <label className="filter-label">Localisation (km)</label>
               <input
-                type="range"
-                min="1"
-                max="20"
-                value={filters.distance}
-                onChange={(e) => handleFilterChange('distance', parseInt(e.target.value))}
-                className="range-input"
+                type="number"
+                name="location"
+                value={filters.location}
+                onChange={handleFilterChange}
+                className="filter-input"
+                placeholder="Distance max"
+                min="0"
+                max="50"
               />
-              <span className="range-value">{filters.distance} km</span>
+            </div>
+
+            <div className="filter-group">
+              <label className="filter-label">Type d'animal</label>
+              <select
+                name="petType"
+                value={filters.petType}
+                onChange={handleFilterChange}
+                className="filter-input"
+              >
+                <option value="">Tous les animaux</option>
+                <option value="Chiens">Chiens</option>
+                <option value="Chats">Chats</option>
+                <option value="Oiseaux">Oiseaux</option>
+                <option value="Lapins">Lapins</option>
+                <option value="Rongeurs">Rongeurs</option>
+              </select>
+            </div>
+
+            <div className="filter-group">
+              <label className="filter-label">Service</label>
+              <select
+                name="service"
+                value={filters.service}
+                onChange={handleFilterChange}
+                className="filter-input"
+              >
+                <option value="">Tous les services</option>
+                <option value="Garde à domicile">Garde à domicile</option>
+                <option value="Garde chez le sitter">Garde chez le sitter</option>
+                <option value="Promenades">Promenades</option>
+              </select>
+            </div>
+
+            <div className="filter-group">
+              <label className="filter-label">Disponibilité</label>
+              <select
+                name="availability"
+                value={filters.availability}
+                onChange={handleFilterChange}
+                className="filter-input"
+              >
+                <option value="">Tous les jours</option>
+                <option value="Lun">Lundi</option>
+                <option value="Mar">Mardi</option>
+                <option value="Mer">Mercredi</option>
+                <option value="Jeu">Jeudi</option>
+                <option value="Ven">Vendredi</option>
+                <option value="Sam">Samedi</option>
+                <option value="Dim">Dimanche</option>
+              </select>
+            </div>
+
+            <div className="filter-group">
+              <label className="filter-label">Prix (€/nuit)</label>
+              <div className="price-range">
+                <input
+                  type="number"
+                  name="minPrice"
+                  value={filters.priceRange[0]}
+                  onChange={(e) => setFilters(prev => ({
+                    ...prev,
+                    priceRange: [parseInt(e.target.value), prev.priceRange[1]]
+                  }))}
+                  className="price-input"
+                  min="0"
+                  max="100"
+                />
+                <span>-</span>
+                <input
+                  type="number"
+                  name="maxPrice"
+                  value={filters.priceRange[1]}
+                  onChange={(e) => setFilters(prev => ({
+                    ...prev,
+                    priceRange: [prev.priceRange[0], parseInt(e.target.value)]
+                  }))}
+                  className="price-input"
+                  min="0"
+                  max="100"
+                />
+              </div>
             </div>
           </div>
-
-          <div className="filter-group">
-            <label className="filter-label">Prix max (€/nuit)</label>
-            <div className="range-filter">
-              <input
-                type="range"
-                min="10"
-                max="100"
-                value={filters.maxPrice}
-                onChange={(e) => handleFilterChange('maxPrice', parseInt(e.target.value))}
-                className="range-input"
-              />
-              <span className="range-value">{filters.maxPrice} €</span>
-            </div>
-          </div>
-
-          <div className="filter-group">
-            <label className="filter-label">Type d'animal</label>
-            <select
-              value={filters.petType}
-              onChange={(e) => handleFilterChange('petType', e.target.value)}
-              className="filter-select"
-            >
-              <option value="any">Tous</option>
-              <option value="Chiens">Chiens</option>
-              <option value="Chats">Chats</option>
-              <option value="Oiseaux">Oiseaux</option>
-              <option value="Lapins">Lapins</option>
-            </select>
-          </div>
         </div>
 
-        {/* Results */}
+        {/* Results Header */}
         <div className="results-header">
-          <h2>{filteredSitters.length} sitters disponibles</h2>
+          <h2 className="results-title">
+            {filteredSitters.length} Pet Sitters disponibles
+          </h2>
           <div className="sort-options">
             <select className="sort-select">
-              <option>Trier par pertinence</option>
-              <option>Trier par distance</option>
-              <option>Trier par prix</option>
-              <option>Trier par note</option>
+              <option>Trier par: Pertinence</option>
+              <option>Prix: croissant</option>
+              <option>Prix: décroissant</option>
+              <option>Note: la plus haute</option>
+              <option>Distance: la plus proche</option>
             </select>
           </div>
         </div>
 
-        {/* Sitters List */}
-        {filteredSitters.length > 0 ? (
-          <div className="sitters-list">
-            {filteredSitters.map(sitter => (
-              <div key={sitter.id} className="sitter-card" onClick={() => viewSitterProfile(sitter.id)}>
-                <div className="sitter-card-header">
-                  <div className="sitter-avatar-container">
-                    <div className="sitter-avatar">{sitter.avatar}</div>
-                    {sitter.verified && <div className="verified-badge">✓ Vérifié</div>}
-                  </div>
+        {/* Sitters Grid */}
+        <div className="sitters-grid">
+          {filteredSitters.length > 0 ? (
+            filteredSitters.map(sitter => (
+              <div key={sitter.id} className="sitter-card">
+                <div className="sitter-header">
+                  <div className="sitter-avatar">{sitter.avatar}</div>
                   <div className="sitter-info">
                     <h3 className="sitter-name">{sitter.name}</h3>
                     <div className="sitter-rating">
@@ -218,51 +266,72 @@ export default function SitterSearch({ onNavigate, sitters, setSitters }) {
                     </div>
                     <div className="sitter-distance">📍 {sitter.distance} km</div>
                   </div>
-                  <div className="sitter-price">
-                    <span className="price-value">{sitter.price}€</span>
-                    <span className="price-unit">/nuit</span>
+                  {sitter.verified && (
+                    <div className="verified-badge">✓ Vérifié</div>
+                  )}
+                </div>
+
+                <div className="sitter-details">
+                  <div className="sitter-meta">
+                    <div className="meta-item">
+                      <span className="meta-icon">⏱️</span>
+                      <span>{sitter.responseTime}</span>
+                    </div>
+                    <div className="meta-item">
+                      <span className="meta-icon">💰</span>
+                      <span>{sitter.price}€/nuit</span>
+                    </div>
                   </div>
-                </div>
 
-                <div className="sitter-pets">
-                  {sitter.petTypes.map((pet, index) => (
-                    <span key={index} className="pet-tag">{pet}</span>
-                  ))}
-                </div>
-
-                <p className="sitter-description">{sitter.description}</p>
-
-                <div className="sitter-services">
-                  {sitter.services.map((service, index) => (
-                    <span key={index} className="service-tag">{service}</span>
-                  ))}
-                </div>
-
-                <div className="sitter-availability">
-                  <span className="availability-label">Disponibilité:</span>
-                  <div className="availability-days">
-                    {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map(day => (
-                      <span 
-                        key={day} 
-                        className={`day ${sitter.availability.includes(day) ? 'available' : 'unavailable'}`}
-                      >
-                        {day}
-                      </span>
+                  <div className="sitter-pets">
+                    {sitter.petTypes.map((pet, index) => (
+                      <span key={index} className="pet-tag">{pet}</span>
                     ))}
                   </div>
+
+                  <div className="sitter-services">
+                    {sitter.services.slice(0, 2).map((service, index) => (
+                      <span key={index} className="service-tag">{service}</span>
+                    ))}
+                    {sitter.services.length > 2 && (
+                      <span className="service-tag more">+{sitter.services.length - 2}</span>
+                    )}
+                  </div>
                 </div>
 
-                <button className="btn-primary btn-sm">Voir le profil</button>
+                <div className="sitter-actions">
+                  <button 
+                    className="btn-primary btn-sm" 
+                    onClick={() => viewSitterProfile(sitter.id)}
+                  >
+                    Voir le profil
+                  </button>
+                  <button className="btn-ghost btn-sm">
+                    💬 Contacter
+                  </button>
+                </div>
               </div>
-            ))}
-          </div>
-        ) : (
-          <div className="empty-state">
-            <div className="empty-icon">🔍</div>
-            <h3>Aucun sitter trouvé</h3>
-            <p>Essayez de modifier vos filtres pour voir plus de résultats.</p>
-          </div>
-        )}
+            ))
+          ) : (
+            <div className="empty-state">
+              <div className="empty-icon">🔍</div>
+              <h3>Aucun résultat trouvé</h3>
+              <p>Essayez de modifier vos filtres pour trouver plus de pet sitters.</p>
+              <button 
+                className="btn-secondary"
+                onClick={() => setFilters({
+                  location: "",
+                  petType: "",
+                  service: "",
+                  availability: "",
+                  priceRange: [0, 100]
+                })}
+              >
+                Réinitialiser les filtres
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       <style jsx>{`
@@ -287,6 +356,14 @@ export default function SitterSearch({ onNavigate, sitters, setSitters }) {
           font-size: 18px;
           cursor: pointer;
           margin-right: 15px;
+          padding: 8px 12px;
+          border-radius: 8px;
+          transition: all 0.2s ease;
+        }
+        
+        .back-button:hover {
+          background: rgba(181, 123, 255, 0.1);
+          color: var(--accent1);
         }
         
         .sitter-search-title {
@@ -296,36 +373,18 @@ export default function SitterSearch({ onNavigate, sitters, setSitters }) {
           margin: 0;
         }
         
-        .search-container {
-          position: relative;
-          margin-bottom: 25px;
-        }
-        
-        .search-icon {
-          position: absolute;
-          left: 15px;
-          top: 50%;
-          transform: translateY(-50%);
-          color: #888;
-        }
-        
-        .search-input {
-          width: 100%;
-          padding: 12px 15px 12px 45px;
-          border-radius: 30px;
-          border: 1px solid #ddd;
-          font-size: 16px;
-        }
-        
-        .filters-container {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 20px;
-          margin-bottom: 30px;
-          padding: 20px;
+        .filters-card {
           background: white;
           border-radius: var(--radius);
+          padding: 25px;
           box-shadow: var(--shadow);
+          margin-bottom: 30px;
+        }
+        
+        .filters-grid {
+          display: grid;
+          grid-template-columns: repeat(5, 1fr);
+          gap: 20px;
         }
         
         .filter-group {
@@ -339,70 +398,69 @@ export default function SitterSearch({ onNavigate, sitters, setSitters }) {
           color: #555;
         }
         
-        .range-filter {
-          display: flex;
-          align-items: center;
-        }
-        
-        .range-input {
-          flex-grow: 1;
-        }
-        
-        .range-value {
-          margin-left: 10px;
-          font-weight: 600;
-          color: var(--accent1);
-          min-width: 50px;
-        }
-        
-        .filter-select {
+        .filter-input {
           padding: 10px;
           border-radius: 8px;
           border: 1px solid #ddd;
-          font-size: 14px;
+        }
+        
+        .price-range {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+        
+        .price-input {
+          width: 100%;
+          padding: 10px;
+          border-radius: 8px;
+          border: 1px solid #ddd;
         }
         
         .results-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 20px;
+          margin-bottom: 25px;
+        }
+        
+        .results-title {
+          font-size: 20px;
+          font-weight: 700;
+          margin: 0;
         }
         
         .sort-select {
           padding: 8px 12px;
           border-radius: 8px;
           border: 1px solid #ddd;
+          background: white;
         }
         
-        .sitters-list {
+        .sitters-grid {
           display: grid;
-          grid-template-columns: repeat(2, 1fr);
+          grid-template-columns: repeat(3, 1fr);
           gap: 25px;
         }
         
         .sitter-card {
           background: white;
           border-radius: var(--radius);
-          padding: 20px;
           box-shadow: var(--shadow);
+          overflow: hidden;
           transition: transform 0.3s, box-shadow 0.3s;
-          cursor: pointer;
         }
         
         .sitter-card:hover {
           transform: translateY(-5px);
-          box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
         
-        .sitter-card-header {
+        .sitter-header {
           display: flex;
-          margin-bottom: 15px;
-        }
-        
-        .sitter-avatar-container {
-          position: relative;
-          margin-right: 15px;
+          align-items: center;
+          padding: 20px;
+          border-bottom: 1px solid #f0f0f0;
         }
         
         .sitter-avatar {
@@ -414,21 +472,7 @@ export default function SitterSearch({ onNavigate, sitters, setSitters }) {
           justify-content: center;
           font-size: 28px;
           background: rgba(181, 123, 255, 0.15);
-        }
-        
-        .verified-badge {
-          position: absolute;
-          bottom: -5px;
-          right: -5px;
-          background: #4CAF50;
-          color: white;
-          border-radius: 50%;
-          width: 24px;
-          height: 24px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 12px;
+          margin-right: 15px;
         }
         
         .sitter-info {
@@ -462,114 +506,112 @@ export default function SitterSearch({ onNavigate, sitters, setSitters }) {
           font-size: 14px;
         }
         
-        .sitter-price {
-          text-align: right;
+        .verified-badge {
+          background: #4CAF50;
+          color: white;
+          padding: 4px 8px;
+          border-radius: 12px;
+          font-size: 12px;
+          font-weight: 600;
         }
         
-        .price-value {
-          font-size: 20px;
-          font-weight: 700;
-          color: var(--accent1);
+        .sitter-details {
+          padding: 20px;
         }
         
-        .price-unit {
+        .sitter-meta {
+          display: flex;
+          margin-bottom: 15px;
+        }
+        
+        .meta-item {
+          display: flex;
+          align-items: center;
+          margin-right: 15px;
           color: #666;
           font-size: 14px;
         }
         
+        .meta-icon {
+          margin-right: 5px;
+        }
+        
         .sitter-pets {
-          margin-bottom: 12px;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin-bottom: 15px;
         }
         
         .pet-tag {
           display: inline-block;
           background: rgba(181, 123, 255, 0.1);
           color: var(--accent1);
-          padding: 4px 10px;
-          border-radius: 20px;
+          padding: 4px 8px;
+          border-radius: 12px;
           font-size: 12px;
-          margin-right: 8px;
-          margin-bottom: 5px;
-        }
-        
-        .sitter-description {
-          color: #666;
-          font-size: 14px;
-          line-height: 1.5;
-          margin-bottom: 15px;
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
         }
         
         .sitter-services {
-          margin-bottom: 15px;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
         }
         
         .service-tag {
           display: inline-block;
           background: rgba(100, 150, 255, 0.1);
-          color: #3498db;
-          padding: 4px 10px;
-          border-radius: 20px;
+          color: #6496ff;
+          padding: 4px 8px;
+          border-radius: 12px;
           font-size: 12px;
-          margin-right: 8px;
-          margin-bottom: 5px;
         }
         
-        .sitter-availability {
-          margin-bottom: 15px;
-        }
-        
-        .availability-label {
-          font-weight: 600;
-          margin-right: 10px;
-          color: #555;
-        }
-        
-        .availability-days {
-          display: flex;
-          gap: 5px;
-        }
-        
-        .day {
-          width: 30px;
-          height: 30px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 12px;
-          font-weight: 600;
-        }
-        
-        .day.available {
-          background: rgba(76, 175, 80, 0.2);
-          color: #4CAF50;
-        }
-        
-        .day.unavailable {
+        .service-tag.more {
           background: rgba(0, 0, 0, 0.05);
-          color: #999;
+          color: #666;
+        }
+        
+        .sitter-actions {
+          display: flex;
+          padding: 15px 20px;
+          border-top: 1px solid #f0f0f0;
+          gap: 10px;
+        }
+        
+        .btn-sm {
+          padding: 8px 12px;
+          font-size: 14px;
         }
         
         .empty-state {
           text-align: center;
           padding: 60px 20px;
+          grid-column: 1 / -1;
         }
         
         .empty-icon {
           font-size: 48px;
+          margin-bottom: 15px;
+        }
+        
+        .empty-state h3 {
+          font-size: 20px;
+          font-weight: 700;
+          margin: 0 0 10px 0;
+        }
+        
+        .empty-state p {
+          color: #666;
           margin-bottom: 20px;
         }
         
         @media (max-width: 768px) {
-          .filters-container {
+          .filters-grid {
             grid-template-columns: 1fr;
           }
           
-          .sitters-list {
+          .sitters-grid {
             grid-template-columns: 1fr;
           }
         }

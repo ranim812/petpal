@@ -68,6 +68,9 @@ export default function AddPet({ onNavigate, user, updateUser }) {
     // Sauvegarder les modifications
     updateUser(updatedUser);
     
+    // Sauvegarder dans localStorage
+    localStorage.setItem('petpal_user', JSON.stringify(updatedUser));
+    
     alert('Animal ajouté avec succès!');
     onNavigate('owner');
   };

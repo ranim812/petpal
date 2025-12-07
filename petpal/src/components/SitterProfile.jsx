@@ -7,11 +7,13 @@ export default function SitterProfile({ onNavigate, sitterId }) {
     startDate: '',
     endDate: ''
   });
+  const [selectedPet, setSelectedPet] = useState('');
+  const [userPets, setUserPets] = useState([]);
 
-  // Données fictives du sitter
-  useEffect(() => {
-    const mockSitter = {
-      id: sitterId || 1,
+  // Liste de sitters fictifs avec différents IDs
+const mockSitters = [
+    {
+      id: "1",
       name: "Marie Dubois",
       avatar: "👩",
       rating: 4.9,
@@ -25,7 +27,7 @@ export default function SitterProfile({ onNavigate, sitterId }) {
         { id: 2, name: "Garde chez le sitter", price: "25€/nuit", description: "Votre animal séjourne chez moi dans un environnement sécurisé" },
         { id: 3, name: "Promenades", price: "12€/promenade", description: "Promenades de 30-60 minutes pour votre chien" }
       ],
-      description: "Passionnée par les animaux, j'ai 5 ans d'expérience en pet sitting. Je suis formée aux premiers secours animaliers et j'offre un environnement sécurisé et aimant pour vos compagnons. J'habite dans un appartement avec un petit jardin sécurisé, idéal pour les petits chiens et les chats. J'envoie régulièrement des photos et des mises à jour pour vous rassurer.",
+      description: "Passionnée par les animaux, j'ai 5 ans d'expérience en pet sitting. Je suis formée aux premiers secours animaliers et j'offre un environnement sécurisé et aimant pour vos compagnons.",
       verified: true,
       joinedDate: "Janvier 2020",
       responseTime: "1 heure",
@@ -36,32 +38,213 @@ export default function SitterProfile({ onNavigate, sitterId }) {
           author: "Jean Dupont", 
           avatar: "👨", 
           rating: 5, 
-          comment: "Marie a pris soin de mon labrador Max pendant une semaine. Elle a envoyé des photos quotidiennes et Max était très heureux à son retour. Je recommande vivement !", 
+          comment: "Marie a pris soin de mon labrador Max pendant une semaine. Elle a envoyé des photos quotidiennes et Max était très heureux à son retour.", 
           date: "15/10/2023",
           pet: "Max (Chien)"
-        },
-        { 
-          id: 2, 
-          author: "Sophie Martin", 
-          avatar: "👩", 
-          rating: 5, 
-          comment: "Excellente garde pour mon chat Luna. Marie est très attentionnée et a respecté toutes les instructions. Luna était détendue et heureuse à son retour.", 
-          date: "02/10/2023",
-          pet: "Luna (Chat)"
-        },
-        { 
-          id: 3, 
-          author: "Thomas Bernard", 
-          avatar: "👨‍💼", 
-          rating: 4.5, 
-          comment: "Très bon service, Marie a pris soin de mes deux chats pendant mes vacances. Seul petit point, j'aurais aimé un peu plus de photos.", 
-          date: "20/09/2023",
-          pet: "Mimi & Fifi (Chats)"
         }
       ]
-    };
-    setSitter(mockSitter);
+    },
+    {
+      id: "2",
+      name: "Lucas Martin",
+      avatar: "👨",
+      rating: 4.8,
+      reviews: 35,
+      distance: 2.5,
+      price: 30,
+      availability: ["Lun", "Mer", "Ven", "Sam", "Dim"],
+      petTypes: ["Chiens", "Oiseaux"],
+      services: [
+        { id: 1, name: "Garde à domicile", price: "18€/visite", description: "Je viens chez vous pour m'occuper de votre animal" },
+        { id: 2, name: "Garde chez le sitter", price: "30€/nuit", description: "Votre animal séjourne chez moi dans un environnement sécurisé" },
+        { id: 3, name: "Promenades", price: "15€/promenade", description: "Promenades de 30-60 minutes pour votre chien" }
+      ],
+      description: "Amoureux des animaux depuis mon enfance, je propose des services de garde pour chiens et oiseaux. J'ai une grande maison avec un jardin clôturé, parfait pour les grands chiens.",
+      verified: true,
+      joinedDate: "Mars 2021",
+      responseTime: "2 heures",
+      address: "8 Avenue des Arbres, Paris 75002",
+      reviewsList: [
+        { 
+          id: 1, 
+          author: "Claire Durand", 
+          avatar: "👩", 
+          rating: 5, 
+          comment: "Lucas a pris soin de mon golden retriever pendant 10 jours. Il a été formidable et a envoyé des vidéos quotidiennes.", 
+          date: "05/11/2023",
+          pet: "Buddy (Chien)"
+        }
+      ]
+    },
+    {
+      id: "3",
+      name: "Sophie Laurent",
+      avatar: "👩‍🦰",
+      rating: 5.0,
+      reviews: 62,
+      distance: 0.8,
+      price: 28,
+      availability: ["Mar", "Jeu", "Sam", "Dim"],
+      petTypes: ["Chiens", "Chats", "Lapins"],
+      services: [
+        { id: 1, name: "Garde à domicile", price: "20€/visite", description: "Je viens chez vous pour m'occuper de votre animal" },
+        { id: 2, name: "Garde chez le sitter", price: "28€/nuit", description: "Votre animal séjourne chez moi dans un environnement sécurisé" },
+        { id: 3, name: "Promenades", price: "14€/promenade", description: "Promenades de 30-60 minutes pour votre chien" }
+      ],
+      description: "Vétérinaire de formation, j'ai décidé de me consacrer entièrement au pet sitting. J'ai une grande expérience avec tous types d'animaux domestiques.",
+      verified: true,
+      joinedDate: "Juin 2019",
+      responseTime: "30 minutes",
+      address: "22 Boulevard des Animaux, Paris 75003",
+      reviewsList: [
+        { 
+          id: 1, 
+          author: "Emma Bernard", 
+          avatar: "👩", 
+          rating: 5, 
+          comment: "Sophie a pris soin de mes trois chats pendant mes vacances. Elle est incroyable avec les animaux !", 
+          date: "12/11/2023",
+          pet: "Mimi, Fifi & Roux (Chats)"
+        }
+      ]
+    },
+    {
+      id: "4",
+      name: "Thomas Petit",
+      avatar: "👨‍💼",
+      rating: 4.7,
+      reviews: 29,
+      distance: 3.1,
+      price: 22,
+      availability: ["Lun", "Mar", "Jeu", "Sam"],
+      petTypes: ["Chiens"],
+      services: [
+        { id: 1, name: "Garde à domicile", price: "16€/visite", description: "Je viens chez vous pour m'occuper de votre animal" },
+        { id: 2, name: "Promenades", price: "10€/promenade", description: "Promenades de 45 minutes pour votre chien" }
+      ],
+      description: "Passionné par les chiens, je propose des services de garde et de promenade. J'ai une expérience particulière avec les chiens de grande taille.",
+      verified: false,
+      joinedDate: "Octobre 2021",
+      responseTime: "3 heures",
+      address: "5 Rue des Pins, Paris 75004",
+      reviewsList: [
+        { 
+          id: 1, 
+          author: "François Dubois", 
+          avatar: "👨", 
+          rating: 4, 
+          comment: "Thomas a promené mon berger allemand tous les jours pendant une semaine. Très satisfait.", 
+          date: "20/11/2023",
+          pet: "Max (Chien)"
+        }
+      ]
+    },
+    {
+      id: "5",
+      name: "Emma Bernard",
+      avatar: "👩‍🦰",
+      rating: 4.9,
+      reviews: 41,
+      distance: 1.8,
+      price: 26,
+      availability: ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"],
+      petTypes: ["Chiens", "Chats", "Rongeurs"],
+      services: [
+        { id: 1, name: "Garde à domicile", price: "18€/visite", description: "Je viens chez vous pour nourrir et jouer avec votre animal" },
+        { id: 2, name: "Garde chez le sitter", price: "26€/nuit", description: "Votre animal séjourne dans mon appartement adapté" },
+        { id: 3, name: "Soins spéciaux", price: "20€/visite", description: "Soins pour animaux nécessitant une attention particulière" }
+      ],
+      description: "Éleveuse professionnelle, j'ai une grande expérience avec les chiens, chats et rongeurs. Mon logement est entièrement adapté pour accueillir différentes espèces.",
+      verified: true,
+      joinedDate: "Février 2020",
+      responseTime: "1 heure",
+      address: "12 Avenue des Petits Animaux, Paris 75005",
+      reviewsList: [
+        { 
+          id: 1, 
+          author: "Julie Martin", 
+          avatar: "👩", 
+          rating: 5, 
+          comment: "Emma a pris soin de mes deux lapins et mon chat pendant 10 jours. Service exceptionnel !", 
+          date: "18/11/2023",
+          pet: "Luna, Pipo & Minou (Lapins, Chat)"
+        }
+      ]
+    },
+    {
+      id: "6",
+      name: "Antoine Lefebvre",
+      avatar: "👨",
+      rating: 4.6,
+      reviews: 33,
+      distance: 4.2,
+      price: 20,
+      availability: ["Mar", "Jeu", "Sam", "Dim"],
+      petTypes: ["Chats", "Oiseaux"],
+      services: [
+        { id: 1, name: "Garde à domicile", price: "14€/visite", description: "Je viens chez vous pour m'occuper de votre animal" },
+        { id: 2, name: "Garde chez le sitter", price: "20€/nuit", description: "Votre animal séjourne dans ma maison avec volière sécurisée" }
+      ],
+      description: "Spécialiste des chats et oiseaux, j'aménagé mon espace pour accueillir ces animaux dans des conditions optimales.",
+      verified: false,
+      joinedDate: "Juillet 2022",
+      responseTime: "4 heures",
+      address: "9 Chemin des Oiseaux, Paris 75006",
+      reviewsList: [
+        { 
+          id: 1, 
+          author: "Sophie Durand", 
+          avatar: "👩", 
+          rating: 4, 
+          comment: "Antoine a gardé mon perroquet pendant une semaine. Très bon service malgré un temps de réponse un peu long.", 
+          date: "10/11/2023",
+          pet: "Rio (Perroquet)"
+        }
+      ]
+    }
+  ];
+
+  // Récupérer les données du sitter en fonction de l'ID
+  useEffect(() => {
+    console.log("Recherche du sitter avec ID:", sitterId);
+    console.log("Type de l'ID:", typeof sitterId);
+    console.log("mockSitters:", mockSitters);
+    
+    // Vérifier si l'ID est valide
+    if (!sitterId) {
+      console.error("ID de sitter non fourni");
+      setSitter(mockSitters[0]); // Utiliser le premier sitter par défaut
+      return;
+    }
+    
+    // Trouver le sitter correspondant à l'ID
+    const foundSitter = mockSitters.find(s => s.id === sitterId.toString());
+    console.log("Sitter trouvé:", foundSitter);
+    
+    if (foundSitter) {
+      setSitter(foundSitter);
+    } else {
+      console.warn("Aucun sitter trouvé avec l'ID:", sitterId);
+      setSitter(mockSitters[0]); // Utiliser le premier sitter par défaut
+    }
   }, [sitterId]);
+
+  // Charger les animaux de l'utilisateur depuis localStorage
+  useEffect(() => {
+    // Récupérer l'utilisateur connecté
+    const userData = JSON.parse(localStorage.getItem('petpal_user'));
+    if (userData && userData.pets) {
+      setUserPets(userData.pets);
+    } else {
+      // Données fictives si l'utilisateur n'a pas d'animaux
+      const mockUserPets = [
+        { id: 1, name: 'Max', type: 'Chien', breed: 'Labrador', age: 3, avatar: '🐕' },
+        { id: 2, name: 'Luna', type: 'Chat', breed: 'Siamois', age: 2, avatar: '🐱' },
+        { id: 3, name: 'Rocky', type: 'Chien', breed: 'Bulldog', age: 5, avatar: '🐕‍🦺' }
+      ];
+      setUserPets(mockUserPets);
+    }
+  }, []);
 
   const handleDateChange = (e) => {
     const { name, value } = e.target;
@@ -71,8 +254,31 @@ export default function SitterProfile({ onNavigate, sitterId }) {
     }));
   };
 
+  const handlePetChange = (e) => {
+    setSelectedPet(e.target.value);
+  };
+
   const bookNow = () => {
-    onNavigate(`booking/${sitter.id}`);
+    if (!selectedPet) {
+      alert("Veuillez sélectionner un animal pour la réservation");
+      return;
+    }
+    
+    // Récupérer les informations de l'animal sélectionné
+    const pet = userPets.find(p => p.id === parseInt(selectedPet));
+    
+    // Naviguer vers la page de réservation avec les informations nécessaires
+    onNavigate(`booking/${sitter.id}`, {
+      sitterId: sitter.id,
+      sitterName: sitter.name,
+      petId: pet.id,
+      petName: pet.name,
+      petType: pet.type,
+      petAvatar: pet.avatar,
+      startDate: bookingDates.startDate,
+      endDate: bookingDates.endDate,
+      price: sitter.price
+    });
   };
 
   if (!sitter) {
@@ -127,6 +333,22 @@ export default function SitterProfile({ onNavigate, sitterId }) {
               <span className="price-unit">/nuit</span>
             </div>
             
+            <div className="booking-pet">
+              <label>Votre animal</label>
+              <select 
+                value={selectedPet} 
+                onChange={handlePetChange}
+                className="pet-select"
+              >
+                <option value="">Sélectionnez un animal</option>
+                {userPets.map(pet => (
+                  <option key={pet.id} value={pet.id}>
+                    {pet.name} ({pet.type})
+                  </option>
+                ))}
+              </select>
+            </div>
+            
             <div className="booking-dates">
               <div className="date-input-group">
                 <label>Début</label>
@@ -151,7 +373,7 @@ export default function SitterProfile({ onNavigate, sitterId }) {
             <button 
               className="btn-primary" 
               onClick={bookNow}
-              disabled={!bookingDates.startDate || !bookingDates.endDate}
+              disabled={!bookingDates.startDate || !bookingDates.endDate || !selectedPet}
             >
               Réserver maintenant
             </button>
@@ -509,6 +731,25 @@ export default function SitterProfile({ onNavigate, sitterId }) {
         .price-unit {
           color: #666;
           font-size: 14px;
+        }
+        
+        .booking-pet {
+          width: 100%;
+          margin-bottom: 15px;
+        }
+        
+        .booking-pet label {
+          display: block;
+          font-size: 12px;
+          color: #666;
+          margin-bottom: 4px;
+        }
+        
+        .pet-select {
+          width: 100%;
+          padding: 8px;
+          border-radius: 6px;
+          border: 1px solid #ddd;
         }
         
         .booking-dates {

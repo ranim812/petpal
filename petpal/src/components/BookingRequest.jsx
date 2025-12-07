@@ -1,10 +1,18 @@
 import { useState, useEffect } from 'react';
+import LocalStorageService from './localStorageService';
 
-export default function BookingRequest({ onNavigate, sitterId, user, bookings, setBookings }) {
+export default function BookingRequest({ 
+  onNavigate, 
+  sitterId, 
+  user, 
+  bookings, 
+  setBookings, 
+  bookingData 
+}) {
   const [sitter, setSitter] = useState(null);
   const [userPets, setUserPets] = useState([]);
   const [selectedPets, setSelectedPets] = useState([]);
-  const [bookingData, setBookingData] = useState({
+  const [bookingInfo, setBookingInfo] = useState({
     startDate: '',
     endDate: '',
     startTime: '09:00',
@@ -14,37 +22,275 @@ export default function BookingRequest({ onNavigate, sitterId, user, bookings, s
     additionalInfo: ''
   });
 
-  // Données fictives du sitter
-  useEffect(() => {
-    const mockSitter = {
-      id: sitterId || 1,
+  // Liste de sitters fictifs (identique à celle dans SitterProfile)
+    const mockSitters = [
+    {
+      id: "1",
       name: "Marie Dubois",
       avatar: "👩",
       rating: 4.9,
+      reviews: 48,
+      distance: 1.2,
       price: 25,
+      availability: ["Lun", "Mar", "Mer", "Jeu", "Ven"],
+      petTypes: ["Chiens", "Chats"],
       services: [
         { id: 'overnight', name: 'Garde chez le sitter', price: 25, unit: 'nuit' },
         { id: 'daycare', name: 'Garderie de jour', price: 20, unit: 'jour' },
         { id: 'visit', name: 'Visite à domicile', price: 15, unit: 'visite' },
         { id: 'walk', name: 'Promenade', price: 12, unit: 'promenade' }
+      ],
+      description: "Passionnée par les animaux, j'ai 5 ans d'expérience en pet sitting. Je suis formée aux premiers secours animaliers et j'offre un environnement sécurisé et aimant pour vos compagnons.",
+      verified: true,
+      joinedDate: "Janvier 2020",
+      responseTime: "1 heure",
+      address: "15 Rue des Fleurs, Paris 75001",
+      reviewsList: [
+        { 
+          id: 1, 
+          author: "Jean Dupont", 
+          avatar: "👨", 
+          rating: 5, 
+          comment: "Marie a pris soin de mon labrador Max pendant une semaine. Elle a envoyé des photos quotidiennes et Max était très heureux à son retour.", 
+          date: "15/10/2023",
+          pet: "Max (Chien)"
+        }
       ]
-    };
-    setSitter(mockSitter);
+    },
+    {
+      id: "2",
+      name: "Lucas Martin",
+      avatar: "👨",
+      rating: 4.8,
+      reviews: 35,
+      distance: 2.5,
+      price: 30,
+      availability: ["Lun", "Mer", "Ven", "Sam", "Dim"],
+      petTypes: ["Chiens", "Oiseaux"],
+      services: [
+        { id: 'overnight', name: 'Garde chez le sitter', price: 30, unit: 'nuit' },
+        { id: 'daycare', name: 'Garderie de jour', price: 22, unit: 'jour' },
+        { id: 'visit', name: 'Visite à domicile', price: 18, unit: 'visite' },
+        { id: 'walk', name: 'Promenade', price: 15, unit: 'promenade' }
+      ],
+      description: "Amoureux des animaux depuis mon enfance, je propose des services de garde pour chiens et oiseaux. J'ai une grande maison avec un jardin clôturé, parfait pour les grands chiens.",
+      verified: true,
+      joinedDate: "Mars 2021",
+      responseTime: "2 heures",
+      address: "8 Avenue des Arbres, Paris 75002",
+      reviewsList: [
+        { 
+          id: 1, 
+          author: "Claire Durand", 
+          avatar: "👩", 
+          rating: 5, 
+          comment: "Lucas a pris soin de mon golden retriever pendant 10 jours. Il a été formidable et a envoyé des vidéos quotidiennes.", 
+          date: "05/11/2023",
+          pet: "Buddy (Chien)"
+        }
+      ]
+    },
+    {
+      id: "3",
+      name: "Sophie Laurent",
+      avatar: "👩‍🦰",
+      rating: 5.0,
+      reviews: 62,
+      distance: 0.8,
+      price: 28,
+      availability: ["Mar", "Jeu", "Sam", "Dim"],
+      petTypes: ["Chiens", "Chats", "Lapins"],
+      services: [
+        { id: 'overnight', name: 'Garde chez le sitter', price: 28, unit: 'nuit' },
+        { id: 'daycare', name: 'Garderie de jour', price: 24, unit: 'jour' },
+        { id: 'visit', name: 'Visite à domicile', price: 20, unit: 'visite' },
+        { id: 'walk', name: 'Promenade', price: 14, unit: 'promenade' }
+      ],
+      description: "Vétérinaire de formation, j'ai décidé de me consacrer entièrement au pet sitting. J'ai une grande expérience avec tous types d'animaux domestiques.",
+      verified: true,
+      joinedDate: "Juin 2019",
+      responseTime: "30 minutes",
+      address: "22 Boulevard des Animaux, Paris 75003",
+      reviewsList: [
+        { 
+          id: 1, 
+          author: "Emma Bernard", 
+          avatar: "👩", 
+          rating: 5, 
+          comment: "Sophie a pris soin de mes trois chats pendant mes vacances. Elle est incroyable avec les animaux !", 
+          date: "12/11/2023",
+          pet: "Mimi, Fifi & Roux (Chats)"
+        }
+      ]
+    },
+    {
+      id: "4",
+      name: "Thomas Petit",
+      avatar: "👨‍💼",
+      rating: 4.7,
+      reviews: 29,
+      distance: 3.1,
+      price: 22,
+      availability: ["Lun", "Mar", "Jeu", "Sam"],
+      petTypes: ["Chiens"],
+      services: [
+        { id: 'visit', name: 'Garde à domicile', price: 16, unit: 'visite' },
+        { id: 'walk', name: 'Promenades', price: 10, unit: 'promenade' }
+      ],
+      description: "Passionné par les chiens, je propose des services de garde et de promenade. J'ai une expérience particulière avec les chiens de grande taille.",
+      verified: false,
+      joinedDate: "Octobre 2021",
+      responseTime: "3 heures",
+      address: "5 Rue des Pins, Paris 75004",
+      reviewsList: [
+        { 
+          id: 1, 
+          author: "François Dubois", 
+          avatar: "👨", 
+          rating: 4, 
+          comment: "Thomas a promené mon berger allemand tous les jours pendant une semaine. Très satisfait.", 
+          date: "20/11/2023",
+          pet: "Max (Chien)"
+        }
+      ]
+    },
+    {
+      id: "5",
+      name: "Emma Bernard",
+      avatar: "👩‍🦰",
+      rating: 4.9,
+      reviews: 41,
+      distance: 1.8,
+      price: 26,
+      availability: ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"],
+      petTypes: ["Chiens", "Chats", "Rongeurs"],
+      services: [
+        { id: 'overnight', name: 'Garde chez le sitter', price: 26, unit: 'nuit' },
+        { id: 'daycare', name: 'Garderie de jour', price: 22, unit: 'jour' },
+        { id: 'visit', name: 'Garde à domicile', price: 18, unit: 'visite' },
+        { id: 'special', name: 'Soins spéciaux', price: 20, unit: 'visite' }
+      ],
+      description: "Éleveuse professionnelle, j'ai une grande expérience avec les chiens, chats et rongeurs. Mon logement est entièrement adapté pour accueillir différentes espèces.",
+      verified: true,
+      joinedDate: "Février 2020",
+      responseTime: "1 heure",
+      address: "12 Avenue des Petits Animaux, Paris 75005",
+      reviewsList: [
+        { 
+          id: 1, 
+          author: "Julie Martin", 
+          avatar: "👩", 
+          rating: 5, 
+          comment: "Emma a pris soin de mes deux lapins et mon chat pendant 10 jours. Service exceptionnel !", 
+          date: "18/11/2023",
+          pet: "Luna, Pipo & Minou (Lapins, Chat)"
+        }
+      ]
+    },
+    {
+      id: "6",
+      name: "Antoine Lefebvre",
+      avatar: "👨",
+      rating: 4.6,
+      reviews: 33,
+      distance: 4.2,
+      price: 20,
+      availability: ["Mar", "Jeu", "Sam", "Dim"],
+      petTypes: ["Chats", "Oiseaux"],
+      services: [
+        { id: 'overnight', name: 'Garde chez le sitter', price: 20, unit: 'nuit' },
+        { id: 'visit', name: 'Garde à domicile', price: 14, unit: 'visite' }
+      ],
+      description: "Spécialiste des chats et oiseaux, j'aménagé mon espace pour accueillir ces animaux dans des conditions optimales.",
+      verified: false,
+      joinedDate: "Juillet 2022",
+      responseTime: "4 heures",
+      address: "9 Chemin des Oiseaux, Paris 75006",
+      reviewsList: [
+        { 
+          id: 1, 
+          author: "Sophie Durand", 
+          avatar: "👩", 
+          rating: 4, 
+          comment: "Antoine a gardé mon perroquet pendant une semaine. Très bon service malgré un temps de réponse un peu long.", 
+          date: "10/11/2023",
+          pet: "Rio (Perroquet)"
+        }
+      ]
+    }
+  ];
+
+  // Charger les données du sitter en fonction de l'ID
+  useEffect(() => {
+    console.log("Recherche du sitter avec ID:", sitterId);
+    console.log("Type de l'ID:", typeof sitterId);
+    
+    // Vérifier si l'ID est valide
+    if (!sitterId) {
+      console.error("ID de sitter non fourni");
+      setSitter(mockSitters[0]); // Utiliser le premier sitter par défaut
+      return;
+    }
+    
+    // Trouver le sitter correspondant à l'ID
+    const foundSitter = mockSitters.find(s => s.id === sitterId.toString());
+    console.log("Sitter trouvé:", foundSitter);
+    
+    if (foundSitter) {
+      setSitter(foundSitter);
+      
+      // Définir le serviceType par défaut en fonction des services disponibles
+      if (foundSitter.services.length > 0) {
+        setBookingInfo(prev => ({
+          ...prev,
+          serviceType: foundSitter.services[0].id
+        }));
+      }
+    } else {
+      console.warn("Aucun sitter trouvé avec l'ID:", sitterId);
+      setSitter(mockSitters[0]); // Utiliser le premier sitter par défaut
+    }
   }, [sitterId]);
 
-  // Données fictives des animaux de l'utilisateur
+  // Charger les animaux de l'utilisateur depuis localStorage
   useEffect(() => {
-    const mockPets = [
-      { id: 1, name: 'Max', type: 'Chien', breed: 'Labrador', age: 3, avatar: '🐕' },
-      { id: 2, name: 'Luna', type: 'Chat', breed: 'Siamois', age: 2, avatar: '🐱' },
-      { id: 3, name: 'Rocky', type: 'Chien', breed: 'Bulldog', age: 5, avatar: '🐕‍🦺' }
-    ];
-    setUserPets(mockPets);
-  }, []);
+    if (user && user.pets) {
+      setUserPets(user.pets);
+    } else {
+      // Récupérer l'utilisateur depuis localStorage si non fourni
+      const userData = LocalStorageService.loadUser();
+      if (userData && userData.pets) {
+        setUserPets(userData.pets);
+      } else {
+        // Données fictives si l'utilisateur n'a pas d'animaux
+        const mockUserPets = [
+          { id: 1, name: 'Max', type: 'Chien', breed: 'Labrador', age: 3, avatar: '🐕' },
+          { id: 2, name: 'Luna', type: 'Chat', breed: 'Siamois', age: 2, avatar: '🐱' },
+          { id: 3, name: 'Rocky', type: 'Chien', breed: 'Bulldog', age: 5, avatar: '🐕‍🦺' }
+        ];
+        setUserPets(mockUserPets);
+      }
+    }
+  }, [user]);
+
+  // Pré-remplir le formulaire avec les données de réservation si elles sont fournies
+  useEffect(() => {
+    if (bookingData) {
+      setBookingInfo(prev => ({
+        ...prev,
+        startDate: bookingData.startDate || '',
+        endDate: bookingData.endDate || ''
+      }));
+      
+      if (bookingData.petId) {
+        setSelectedPets([bookingData.petId]);
+      }
+    }
+  }, [bookingData]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setBookingData(prev => ({
+    setBookingInfo(prev => ({
       ...prev,
       [name]: value
     }));
@@ -61,51 +307,68 @@ export default function BookingRequest({ onNavigate, sitterId, user, bookings, s
   };
 
   const calculateTotalPrice = () => {
-    if (!sitter || !bookingData.startDate || !bookingData.endDate) return 0;
+    if (!sitter || !bookingInfo.startDate || !bookingInfo.endDate) return 0;
     
-    const service = sitter.services.find(s => s.id === bookingData.serviceType);
+    const service = sitter.services.find(s => s.id === bookingInfo.serviceType);
     if (!service) return 0;
     
-    const start = new Date(bookingData.startDate);
-    const end = new Date(bookingData.endDate);
+    const start = new Date(bookingInfo.startDate);
+    const end = new Date(bookingInfo.endDate);
     const diffTime = Math.abs(end - start);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     
     return service.price * diffDays;
   };
 
-  const submitBookingRequest = () => {
-    if (!bookingData.startDate || !bookingData.endDate || selectedPets.length === 0) {
+  const submitBookingRequest = (e) => {
+    e.preventDefault();
+    
+    // Vérifier que l'utilisateur est connecté
+    if (!user || !user.id) {
+      alert('Vous devez être connecté pour effectuer une réservation');
+      onNavigate('login');
+      return;
+    }
+    
+    // Valider les champs
+    if (!bookingInfo.startDate || !bookingInfo.endDate || selectedPets.length === 0) {
       alert('Veuillez remplir tous les champs obligatoires');
       return;
     }
     
     // Créer une nouvelle réservation
     const newBooking = {
-      id: Date.now(), // ID unique basé sur le timestamp
+      id: Date.now(),
       sitterId: sitterId,
       sitterName: sitter.name,
       userId: user.id,
       userName: user.name,
       pets: selectedPets.map(id => userPets.find(pet => pet.id === id)),
-      ...bookingData,
+      ...bookingInfo,
       status: 'pending', // pending, confirmed, cancelled
       createdAt: new Date().toISOString()
     };
     
-    // Ajouter la réservation à la liste existante
+    // Mettre à jour l'état des réservations
     const updatedBookings = [...bookings, newBooking];
     setBookings(updatedBookings);
     
-    // Dans une vraie application, envoie des données au backend
+    // Sauvegarder explicitement dans localStorage
+    LocalStorageService.saveBookings(updatedBookings);
+    
+    // Sauvegarder les modifications
     console.log('Demande de réservation envoyée:', newBooking);
     
     alert('Demande de réservation envoyée avec succès!');
-    onNavigate('bookings');
+    
+    // Rediriger vers le dashboard approprié
+    const dashboardView = user.type === 'owner' ? 'owner' : 'sitter';
+    console.log("Redirection vers le dashboard:", dashboardView);
+    onNavigate(dashboardView);
   };
 
   if (!sitter) {
-    return <div>Chargement...</div>;
+    return <div className="loading-container">Chargement...</div>;
   }
 
   return (
@@ -131,7 +394,7 @@ export default function BookingRequest({ onNavigate, sitterId, user, bookings, s
             </div>
           </div>
 
-          <div className="booking-form">
+          <form onSubmit={submitBookingRequest} className="booking-form">
             {/* Service Selection */}
             <div className="form-section">
               <h3>Type de service</h3>
@@ -139,7 +402,7 @@ export default function BookingRequest({ onNavigate, sitterId, user, bookings, s
                 {sitter.services.map(service => (
                   <div 
                     key={service.id}
-                    className={`service-option ${bookingData.serviceType === service.id ? 'selected' : ''}`}
+                    className={`service-option ${bookingInfo.serviceType === service.id ? 'selected' : ''}`}
                     onClick={() => handleInputChange({ target: { name: 'serviceType', value: service.id } })}
                   >
                     <div className="service-name">{service.name}</div>
@@ -158,7 +421,7 @@ export default function BookingRequest({ onNavigate, sitterId, user, bookings, s
                   <input
                     type="date"
                     name="startDate"
-                    value={bookingData.startDate}
+                    value={bookingInfo.startDate}
                     onChange={handleInputChange}
                     required
                   />
@@ -168,9 +431,9 @@ export default function BookingRequest({ onNavigate, sitterId, user, bookings, s
                   <input
                     type="date"
                     name="endDate"
-                    value={bookingData.endDate}
+                    value={bookingInfo.endDate}
                     onChange={handleInputChange}
-                    min={bookingData.startDate}
+                    min={bookingInfo.startDate}
                     required
                   />
                 </div>
@@ -186,7 +449,7 @@ export default function BookingRequest({ onNavigate, sitterId, user, bookings, s
                   <input
                     type="time"
                     name="startTime"
-                    value={bookingData.startTime}
+                    value={bookingInfo.startTime}
                     onChange={handleInputChange}
                   />
                 </div>
@@ -195,7 +458,7 @@ export default function BookingRequest({ onNavigate, sitterId, user, bookings, s
                   <input
                     type="time"
                     name="endTime"
-                    value={bookingData.endTime}
+                    value={bookingInfo.endTime}
                     onChange={handleInputChange}
                   />
                 </div>
@@ -230,7 +493,7 @@ export default function BookingRequest({ onNavigate, sitterId, user, bookings, s
               <h3>Besoins spéciaux</h3>
               <textarea
                 name="specialNeeds"
-                value={bookingData.specialNeeds}
+                value={bookingInfo.specialNeeds}
                 onChange={handleInputChange}
                 placeholder="Médicaments, régime alimentaire, problèmes de santé, etc."
                 rows={3}
@@ -242,7 +505,7 @@ export default function BookingRequest({ onNavigate, sitterId, user, bookings, s
               <h3>Informations complémentaires</h3>
               <textarea
                 name="additionalInfo"
-                value={bookingData.additionalInfo}
+                value={bookingInfo.additionalInfo}
                 onChange={handleInputChange}
                 placeholder="Toute information utile pour le sitter"
                 rows={3}
@@ -259,14 +522,14 @@ export default function BookingRequest({ onNavigate, sitterId, user, bookings, s
               <div className="summary-item">
                 <span>Service:</span>
                 <span>
-                  {sitter.services.find(s => s.id === bookingData.serviceType)?.name}
+                  {sitter.services.find(s => s.id === bookingInfo.serviceType)?.name}
                 </span>
               </div>
               <div className="summary-item">
                 <span>Dates:</span>
                 <span>
-                  {bookingData.startDate && bookingData.endDate 
-                    ? `${bookingData.startDate} - ${bookingData.endDate}` 
+                  {bookingInfo.startDate && bookingInfo.endDate 
+                    ? `${bookingInfo.startDate} - ${bookingInfo.endDate}` 
                     : 'Non spécifiées'}
                 </span>
               </div>
@@ -286,13 +549,13 @@ export default function BookingRequest({ onNavigate, sitterId, user, bookings, s
 
             {/* Submit Button */}
             <button 
+              type="submit"
               className="btn-primary submit-button"
-              onClick={submitBookingRequest}
-              disabled={!bookingData.startDate || !bookingData.endDate || selectedPets.length === 0}
+              disabled={!bookingInfo.startDate || !bookingInfo.endDate || selectedPets.length === 0}
             >
               Envoyer la demande
             </button>
-          </div>
+          </form>
         </div>
       </div>
 
@@ -547,6 +810,15 @@ export default function BookingRequest({ onNavigate, sitterId, user, bookings, s
           width: 100%;
           padding: 15px;
           font-size: 16px;
+        }
+        
+        .loading-container {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 200px;
+          font-size: 18px;
+          color: #666;
         }
         
         @media (max-width: 768px) {

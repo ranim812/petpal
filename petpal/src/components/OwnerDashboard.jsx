@@ -1,28 +1,41 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function OwnerDashboard({ onNavigate, user, bookings, updateUser }) {
-  const [activeBookings] = useState([
-    { id: 1, sitter: "Marie Dubois", pet: "Max", date: "15-20 Nov", status: "Confirmé", avatar: "🐕" },
-    { id: 2, sitter: "Lucas Martin", pet: "Luna", date: "22-25 Nov", status: "En attente", avatar: "🐱" }
+  const [activeBookings, setActiveBookings] = useState([]);
+  
+  // CORRECTION: Utiliser les bons IDs qui correspondent au SitterProfile
+  const [favoriteSitters] = useState([
+    { id: "1", name: "Marie Dubois", rating: 4.9, reviews: 48, specialty: "Chiens & Chats", avatar: "👩" },
+    { id: "3", name: "Sophie Laurent", rating: 5.0, reviews: 62, specialty: "Multi-animaux", avatar: "👩‍🦰" },
+    { id: "5", name: "Emma Bernard", rating: 4.9, reviews: 41, specialty: "Chiens, Chats & Rongeurs", avatar: "👩‍🦰" }
   ]);
 
-  const [favoriteSitters] = useState([
-    { id: 1, name: "Sophie Laurent", rating: 4.9, reviews: 48, specialty: "Chiens", avatar: "👩" },
-    { id: 2, name: "Thomas Petit", rating: 4.8, reviews: 35, specialty: "Chats", avatar: "👨" },
-    { id: 3, name: "Emma Bernard", rating: 5.0, reviews: 62, specialty: "Multi-animaux", avatar: "👩‍🦰" }
-  ]);
+  // Filtrer les réservations actives (en attente ou confirmées) pour l'utilisateur connecté
+  useEffect(() => {
+    if (!user) return;
+    
+    const active = bookings.filter(booking => 
+      (booking.status === 'pending' || booking.status === 'confirmed') && 
+      booking.userId === user.id
+    );
+    setActiveBookings(active);
+  }, [bookings, user]);
 
   const handleViewSitterProfile = (sitterId) => {
+    console.log("Navigation vers le profil du sitter ID:", sitterId);
     onNavigate(`sitterprofile/${sitterId}`);
   };
 
   const handleContactSitter = (sitterId) => {
     onNavigate(`messages`);
-    // Dans une vraie application, vous ouvririez directement la conversation avec ce sitter
   };
 
   const handleAddPet = () => {
     onNavigate('addpet');
+  };
+
+  const handleViewBookingDetails = (bookingId) => {
+    onNavigate(`bookingdetails/${bookingId}`);
   };
 
   return (
@@ -101,24 +114,42 @@ export default function OwnerDashboard({ onNavigate, user, bookings, updateUser 
             <a className="view-all" onClick={() => onNavigate("bookings")}>Voir tout →</a>
           </div>
           <div className="bookings-list">
-            {activeBookings.map(booking => (
-              <div key={booking.id} className="booking-card">
-                <div className="booking-left">
-                  <div className="booking-avatar">{booking.avatar}</div>
-                  <div className="booking-info">
-                    <h4>{booking.pet}</h4>
-                    <p>Gardien: {booking.sitter}</p>
-                    <p className="booking-date">📆 {booking.date}</p>
+            {activeBookings.length > 0 ? (
+              activeBookings.map(booking => (
+                <div key={booking.id} className="booking-card">
+                  <div className="booking-left">
+                    <div className="booking-avatar">
+                      {booking.pets && booking.pets.length > 0 ? booking.pets[0].avatar : '🐾'}
+                    </div>
+                    <div className="booking-info">
+                      <h4>{booking.pets && booking.pets.length > 0 ? booking.pets[0].name : 'Animal'}</h4>
+                      <p>Gardien: {booking.sitterName}</p>
+                      <p className="booking-date">
+                        📆 {new Date(booking.startDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })} - {new Date(booking.endDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="booking-right">
+                    <span className={`status-badge ${booking.status === 'confirmed' ? 'confirmed' : 'pending'}`}>
+                      {booking.status === 'confirmed' ? 'Confirmé' : 'En attente'}
+                    </span>
+                    <button 
+                      className="btn-ghost btn-sm" 
+                      onClick={() => handleViewBookingDetails(booking.id)}
+                    >
+                      Détails
+                    </button>
                   </div>
                 </div>
-                <div className="booking-right">
-                  <span className={`status-badge ${booking.status === 'Confirmé' ? 'confirmed' : 'pending'}`}>
-                    {booking.status}
-                  </span>
-                  <button className="btn-ghost btn-sm">Détails</button>
-                </div>
+              ))
+            ) : (
+              <div className="empty-state">
+                <p>Vous n'avez aucune réservation active.</p>
+                <button className="btn-primary" onClick={() => onNavigate("sitters")}>
+                  Trouver un sitter
+                </button>
               </div>
-            ))}
+            )}
           </div>
         </div>
 
