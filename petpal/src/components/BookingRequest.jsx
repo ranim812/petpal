@@ -258,7 +258,7 @@ export default function BookingRequest({
       setUserPets(user.pets);
     } else {
       // Récupérer l'utilisateur depuis localStorage si non fourni
-      const userData = LocalStorageService.loadUser();
+      const userData = localStorageService.loadUser();
       if (userData && userData.pets) {
         setUserPets(userData.pets);
       } else {

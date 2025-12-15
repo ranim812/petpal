@@ -84,9 +84,9 @@ export default function Signup({ onNavigate, onLogin }) {
     };
 
     // Sauvegarder l'utilisateur
-    const users = LocalStorageService.loadUsers();
+    const users = localStorageService.loadUsers();
     users.push(newUser);
-    LocalStorageService.saveUsers(users);
+    localStorageService.saveUsers(users);
 
     // Connexion automatique
     onLogin(newUser, formData.userType);

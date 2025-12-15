@@ -38,47 +38,47 @@ export default function App() {
     console.log('🚀 Initialisation de l\'application...');
     
     // Charger l'authentification
-    const authData = LocalStorageService.loadAuth();
+    const authData = localStorageService.loadAuth();
     setIsAuthenticated(authData.isAuthenticated);
     setUserType(authData.userType);
     
     // Charger l'utilisateur
-    const userData = LocalStorageService.loadUser();
+    const userData = localStorageService.loadUser();
     setUser(userData);
     
     // Charger TOUTES les réservations (pas seulement celles de l'utilisateur)
-    const allBookings = LocalStorageService.loadBookings();
+    const allBookings = localStorageService.loadBookings();
     setBookings(allBookings);
     console.log(`📚 ${allBookings.length} réservation(s) chargée(s)`);
     
     // Charger les autres données
-    setMessages(LocalStorageService.loadMessages());
-    setNotifications(LocalStorageService.loadNotifications());
-    setSitters(LocalStorageService.loadSitters());
-    setProfile(LocalStorageService.loadProfile());
+    setMessages(localStorageService.loadMessages());
+    setNotifications(localStorageService.loadNotifications());
+    setSitters(localStorageService.loadSitters());
+    setProfile(localStorageService.loadProfile());
     
     // Debug
-    LocalStorageService.debugStorage();
+    localStorageService.debugStorage();
   }, []);
 
   // Sauvegarder l'authentification lorsqu'elle change
   useEffect(() => {
     if (isAuthenticated !== null) {
-      LocalStorageService.saveAuth({ isAuthenticated, userType });
+      localStorageService.saveAuth({ isAuthenticated, userType });
     }
   }, [isAuthenticated, userType]);
 
   // Sauvegarder l'utilisateur lorsqu'il change
   useEffect(() => {
     if (user !== null) {
-      LocalStorageService.saveUser(user);
+      localStorageService.saveUser(user);
     }
   }, [user]);
 
   // CRUCIAL: Sauvegarder les réservations à chaque modification
   useEffect(() => {
     if (bookings.length >= 0) {
-      LocalStorageService.saveBookings(bookings);
+      localStorageService.saveBookings(bookings);
       console.log(`💾 ${bookings.length} réservation(s) sauvegardée(s)`);
     }
   }, [bookings]);
@@ -86,28 +86,28 @@ export default function App() {
   // Sauvegarder les messages
   useEffect(() => {
     if (messages.length >= 0) {
-      LocalStorageService.saveMessages(messages);
+      localStorageService.saveMessages(messages);
     }
   }, [messages]);
 
   // Sauvegarder les notifications
   useEffect(() => {
     if (notifications.length >= 0) {
-      LocalStorageService.saveNotifications(notifications);
+      localStorageService.saveNotifications(notifications);
     }
   }, [notifications]);
 
   // Sauvegarder les sitters
   useEffect(() => {
     if (sitters.length >= 0) {
-      LocalStorageService.saveSitters(sitters);
+      localStorageService.saveSitters(sitters);
     }
   }, [sitters]);
 
   // Sauvegarder le profil
   useEffect(() => {
     if (Object.keys(profile).length >= 0) {
-      LocalStorageService.saveProfile(profile);
+      localStorageService.saveProfile(profile);
     }
   }, [profile]);
 
@@ -148,11 +148,11 @@ export default function App() {
     setUserType(userType);
     
     // Sauvegarder immédiatement
-    LocalStorageService.saveUser(userData);
-    LocalStorageService.saveAuth({ isAuthenticated: true, userType });
+    localStorageService.saveUser(userData);
+    localStorageService.saveAuth({ isAuthenticated: true, userType });
     
     // Charger les réservations de l'utilisateur
-    const allBookings = LocalStorageService.loadBookings();
+    const allBookings = localStorageService.loadBookings();
     setBookings(allBookings);
     
     console.log('✅ Connexion réussie');
@@ -166,7 +166,7 @@ export default function App() {
     setUser(null);
     
     // NE PAS vider les réservations, elles restent dans localStorage
-    LocalStorageService.logout();
+    localStorageService.logout();
     
     setView("home");
     console.log('✅ Déconnexion réussie');
@@ -177,14 +177,14 @@ export default function App() {
     console.log('👤 Mise à jour de l\'utilisateur:', updatedUserData);
     
     setUser(updatedUserData);
-    LocalStorageService.saveUser(updatedUserData);
+    localStorageService.saveUser(updatedUserData);
     
     // Mettre aussi à jour dans la liste des utilisateurs
-    const users = LocalStorageService.loadUsers();
+    const users = localStorageService.loadUsers();
     const updatedUsers = users.map(u => 
       u.id === updatedUserData.id ? updatedUserData : u
     );
-    LocalStorageService.saveUsers(updatedUsers);
+    localStorageService.saveUsers(updatedUsers);
     
     console.log('✅ Utilisateur mis à jour');
   };
