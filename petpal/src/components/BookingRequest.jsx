@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import LocalStorageService from './localStorageService';
+import localStorageService from './localStorageService';
 
 export default function BookingRequest({ 
   onNavigate, 

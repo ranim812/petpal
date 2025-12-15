@@ -1,7 +1,7 @@
 import { Form, Button } from "react-bootstrap";
 import { useState } from "react";
 import AuthService from "./AuthService";
-import LocalStorageService from './localStorageService'; // Ajout de l'import
+import localStorageService from './localStorageService'; // Ajout de l'import
 
 export default function Login({ onNavigate, onLogin }) {
   const [userType, setUserType] = useState("owner");

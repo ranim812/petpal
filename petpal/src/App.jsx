@@ -10,7 +10,7 @@ import SitterProfile from "./components/SitterProfile";
 import BookingRequest from "./components/BookingRequest";
 import BookingList from "./components/BookingList";
 import AddPet from "./components/AddPet";
-import LocalStorageService from "./components/localStorageService";
+import localStorageService from "./components/localStorageService";
 import AuthService from "./components/AuthService";
 import "./App.css";
 

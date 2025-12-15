@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import LocalStorageService from './localStorageService';
+import localStorageService from './localStorageService';
 
 export default function Signup({ onNavigate, onLogin }) {
   const [formData, setFormData] = useState({
