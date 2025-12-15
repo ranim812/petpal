@@ -1,6 +1,4 @@
-// ============================================
-// SitterDashboard.jsx
-// ============================================
+
 import { useState } from "react";
 
 export default function SitterDashboard({ onNavigate }) {
@@ -20,7 +18,7 @@ export default function SitterDashboard({ onNavigate }) {
         {/* Welcome Section */}
         <div className="welcome-banner sitter-banner">
           <div className="welcome-content">
-            <h1>Bonjour, Marie! 🌟</h1>
+            <h1>Bonjour ! 🌟</h1>
             <p>Gérez vos gardes et développez votre activité de pet sitting</p>
           </div>
           <button className="btn-primary" onClick={() => onNavigate("calendar")}>
